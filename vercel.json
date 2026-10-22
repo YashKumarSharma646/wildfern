@@ -10,6 +10,18 @@
     {
       "source": "/api/(.*)",
       "destination": "/api/index"
+    },
+    {
+      "source": "/admin",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/admin/(.*)",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/pass/(.*)",
+      "destination": "/index.html"
     }
   ],
   "functions": {
@@ -43,6 +55,36 @@
         {
           "key": "Cache-Control",
           "value": "no-store"
+        }
+      ]
+    },
+    {
+      "source": "/admin(.*)",
+      "headers": [
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "same-origin"
+        }
+      ]
+    },
+    {
+      "source": "/pass/(.*)",
+      "headers": [
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "no-referrer"
         }
       ]
     }

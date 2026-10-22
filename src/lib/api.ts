@@ -55,8 +55,23 @@ export interface Reservation {
   date: string
   time: string
   party_size: number
-  status: 'confirmed' | 'cancelled'
+  status: 'confirmed' | 'seated' | 'no_show' | 'cancelled'
+  /** Signed token behind the QR booking pass. */
+  pass_token: string
 }
+
+/** What a pass link shows — no private details. */
+export interface PassInfo {
+  code: string
+  name: string
+  date: string
+  time: string
+  party_size: number
+  status: Reservation['status']
+}
+
+/** The URL encoded in a booking pass QR (and shareable as a link). */
+export const passUrl = (token: string) => `${window.location.origin}/pass/${token}`
 
 export interface NewReservation {
   name: string
@@ -79,6 +94,7 @@ export const api = {
       method: 'POST',
       body: JSON.stringify({ email: email.trim() }),
     }),
+  pass: (token: string) => request<PassInfo>(`/api/pass/${encodeURIComponent(token)}`),
   subscribe: (email: string) =>
     request<{ ok: boolean; message: string }>('/api/newsletter', { method: 'POST', body: JSON.stringify({ email }) }),
 }

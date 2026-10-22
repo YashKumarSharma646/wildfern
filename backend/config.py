@@ -30,11 +30,20 @@ def _database_url() -> str:
 class Settings:
     database_url: str = field(default_factory=_database_url)
     admin_token: str = field(default_factory=lambda: os.getenv("ADMIN_TOKEN", ""))
+    # Signs booking-pass QR codes. Falls back to ADMIN_TOKEN; set it separately so rotating the
+    # admin password doesn't invalidate guests' passes.
+    pass_secret: str = field(default_factory=lambda: os.getenv("PASS_SECRET", ""))
     # Comma-separated list; only needed when the frontend is served from another origin.
     cors_origins: tuple[str, ...] = field(
         default_factory=lambda: tuple(o.strip() for o in os.getenv("CORS_ORIGINS", "").split(",") if o.strip())
     )
     cafe_timezone: str = field(default_factory=lambda: os.getenv("CAFE_TIMEZONE", "UTC"))
+
+    # Optional email via Resend (https://resend.com). Everything stays off until RESEND_API_KEY is set.
+    resend_api_key: str = field(default_factory=lambda: os.getenv("RESEND_API_KEY", ""))
+    email_from: str = field(default_factory=lambda: os.getenv("EMAIL_FROM", "Wildfern <onboarding@resend.dev>"))
+    notify_email: str = field(default_factory=lambda: os.getenv("NOTIFY_EMAIL", ""))  # the owner's inbox
+    send_guest_emails: bool = field(default_factory=lambda: os.getenv("SEND_GUEST_EMAILS", "").lower() in ("1", "true", "yes"))
 
     # Booking rules
     open_minute: int = 7 * 60  # 07:00
@@ -42,7 +51,8 @@ class Settings:
     slot_minutes: int = 30
     visit_minutes: int = 90  # how long a booking holds its seats
     bookable_seats: int = 32  # the rest of the room is kept for walk-ins
-    max_party: int = 8
+    max_party: int = 8  # online bookings
+    max_party_staff: int = 16  # phone / walk-in bookings entered by the team
     booking_window_days: int = 90
     min_notice_minutes: int = 60
 

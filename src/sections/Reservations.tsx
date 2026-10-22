@@ -1,6 +1,7 @@
-import { ArrowRight, CalendarCheck, Check, Clock, Copy, Loader2, MapPin, Phone, RotateCcw, Search, X } from 'lucide-react'
+import { ArrowRight, CalendarCheck, Clock, Loader2, MapPin, Phone, QrCode, RotateCcw, Search, X } from 'lucide-react'
 import { AnimatePresence, motion } from 'motion/react'
 import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react'
+import { BookingPass } from '../components/BookingPass'
 import { Edge } from '../components/Edge'
 import { RevealText } from '../components/RevealText'
 import { useSectionMotion } from '../hooks/useSectionMotion'
@@ -102,7 +103,6 @@ function BookingForm({ onManage }: { onManage: (code: string, email: string) => 
   const [booking, setBooking] = useState<Reservation | null>(null)
   const [slots, setSlots] = useState<Slot[] | null>(null)
   const [slotsState, setSlotsState] = useState<'idle' | 'loading' | 'error'>('idle')
-  const [copied, setCopied] = useState(false)
 
   const minDate = useMemo(() => toISODate(new Date()), [])
   const maxDate = useMemo(() => {
@@ -194,19 +194,7 @@ function BookingForm({ onManage }: { onManage: (code: string, email: string) => 
     setErrors({})
     setTouched({})
     setBooking(null)
-    setCopied(false)
     setStatus('idle')
-  }
-
-  const copyCode = async () => {
-    if (!booking) return
-    try {
-      await navigator.clipboard.writeText(booking.code)
-      setCopied(true)
-      window.setTimeout(() => setCopied(false), 2000)
-    } catch {
-      /* clipboard blocked — the code is on screen anyway */
-    }
   }
 
   const err = (k: keyof FormValues) => (touched[k] ? errors[k] : undefined)
@@ -236,17 +224,10 @@ function BookingForm({ onManage }: { onManage: (code: string, email: string) => 
             Table reserved
           </span>
           <h3 className="display">See you soon, {booking.name.split(' ')[0]}.</h3>
-          <div className="code-card">
-            <span>Your booking code</span>
-            <strong>{booking.code}</strong>
-            <button type="button" className="code-card__copy" onClick={copyCode} aria-label="Copy booking code">
-              {copied ? <Check aria-hidden /> : <Copy aria-hidden />}
-              {copied ? 'Copied' : 'Copy'}
-            </button>
-          </div>
-          <Summary r={booking} />
+          <BookingPass pass={booking} token={booking.pass_token} />
           <p className="form__note">
-            Keep this code — with your email ({booking.email}) it lets you look up or cancel your booking any time.
+            Save or screenshot your pass — we’ll scan it at the door. To change plans, use “Manage booking” with your code and
+            email ({booking.email}).
           </p>
           <div className="form__actions">
             <button type="button" className="btn btn--dark" onClick={reset}>
@@ -360,7 +341,15 @@ function BookingForm({ onManage }: { onManage: (code: string, email: string) => 
 /* Manage an existing booking                                          */
 /* ------------------------------------------------------------------ */
 
+const STATUS_LABEL: Record<Reservation['status'], string> = {
+  confirmed: 'Confirmed',
+  seated: 'Checked in',
+  no_show: 'Missed',
+  cancelled: 'Cancelled',
+}
+
 function ManageBooking({ initial }: { initial: { code: string; email: string } | null }) {
+  const [showPass, setShowPass] = useState(Boolean(initial))
   const [code, setCode] = useState(initial?.code ?? '')
   const [email, setEmail] = useState(initial?.email ?? '')
   const [found, setFound] = useState<Reservation | null>(null)
@@ -443,9 +432,14 @@ function ManageBooking({ initial }: { initial: { code: string; email: string } |
           >
             <div className="manage__head">
               <strong>{found.code}</strong>
-              <span className={`badge badge--${found.status}`}>{found.status === 'confirmed' ? 'Confirmed' : 'Cancelled'}</span>
+              <span className={`badge badge--${found.status}`}>{STATUS_LABEL[found.status]}</span>
             </div>
-            <Summary r={found} />
+            {showPass ? <BookingPass pass={found} token={found.pass_token} compact /> : <Summary r={found} />}
+            {found.status !== 'cancelled' && (
+              <button type="button" className="btn btn--ghost-dark manage__pass-toggle" onClick={() => setShowPass((v) => !v)}>
+                <QrCode aria-hidden /> {showPass ? 'Hide pass' : 'Show my pass'}
+              </button>
+            )}
             {found.status === 'confirmed' &&
               (state === 'confirm' ? (
                 <div className="form__actions">

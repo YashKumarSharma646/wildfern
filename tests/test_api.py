@@ -1,13 +1,6 @@
-import os
-import tempfile
 from datetime import timedelta
-from pathlib import Path
 
-# Point the app at a throwaway database before it is imported.
-_tmp = Path(tempfile.mkdtemp()) / "test.db"
-os.environ["DATABASE_URL"] = f"sqlite:///{_tmp}"
-os.environ["ADMIN_TOKEN"] = "test-admin-token"
-
+# The throwaway database and admin password are set up in conftest.py.
 import pytest  # noqa: E402
 from fastapi.testclient import TestClient  # noqa: E402
 

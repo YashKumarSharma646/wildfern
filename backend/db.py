@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from collections.abc import Iterator
 
-from sqlalchemy import create_engine, event
+from sqlalchemy import create_engine, event, inspect, text
 from sqlalchemy.orm import DeclarativeBase, Session, sessionmaker
 from sqlalchemy.pool import NullPool
 
@@ -43,6 +43,26 @@ def init_db() -> None:
     from . import models  # noqa: F401
 
     Base.metadata.create_all(engine)
+    _add_missing_columns()
+
+
+def _add_missing_columns() -> None:
+    """Tiny forward-only migration: add columns that exist on the models but not yet in the
+    database (create_all only creates missing *tables*). New columns are always nullable or
+    have a server default, so existing rows stay valid."""
+    insp = inspect(engine)
+    for table in Base.metadata.sorted_tables:
+        if not insp.has_table(table.name):
+            continue
+        existing = {c["name"] for c in insp.get_columns(table.name)}
+        for col in table.columns:
+            if col.name in existing:
+                continue
+            ddl = f"ALTER TABLE {table.name} ADD COLUMN {col.name} {col.type.compile(dialect=engine.dialect)}"
+            if col.server_default is not None:
+                ddl += f" DEFAULT {col.server_default.arg.text}"
+            with engine.begin() as conn:
+                conn.execute(text(ddl))
 
 
 def get_session() -> Iterator[Session]:
