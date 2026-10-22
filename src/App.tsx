@@ -7,6 +7,7 @@ import { useReducedMotion } from './hooks/useReducedMotion'
 import { ScrollTrigger } from './lib/gsap'
 import { detectQuality, hasWebGL } from './lib/quality'
 import { sceneState } from './lib/sceneState'
+import { initSmoothScroll } from './lib/smoothScroll'
 import { Footer } from './sections/Footer'
 import { Journey } from './sections/Journey'
 import { Menu } from './sections/Menu'
@@ -31,6 +32,9 @@ export default function App() {
   useEffect(() => {
     sceneState.reducedMotion = reducedMotion
   }, [reducedMotion])
+
+  // Smooth, frame-synchronised scrolling on desktop (see lib/smoothScroll.ts).
+  useEffect(() => initSmoothScroll(), [reducedMotion])
 
   useEffect(() => {
     // Always start at the top so the journey begins at the forest edge.

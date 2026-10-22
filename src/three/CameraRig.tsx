@@ -50,7 +50,9 @@ export function CameraRig() {
 
     // Ease scroll progress — inertia gives the dolly a heavy, cinematic feel.
     const target = sceneState.journey
-    frame.journey += (target - frame.journey) * (1 - Math.exp(-dt * (reduced ? 12 : 4)))
+    // Input is already smoothed by Lenis on desktop — follow it closely so the camera doesn't lag.
+    const follow = reduced ? 12 : sceneState.smoothScroll ? 9 : 4
+    frame.journey += (target - frame.journey) * (1 - Math.exp(-dt * follow))
     const p = frame.journey
 
     // Pointer: live input, or a slow figure-eight drift on touch / idle.

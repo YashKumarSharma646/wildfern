@@ -198,6 +198,8 @@ export function Space() {
         <div
           ref={track}
           className="gallery__track"
+          // Sideways swipes stay native here; vertical wheel still scrolls the page.
+          data-lenis-prevent-horizontal
           role="region"
           aria-roledescription="carousel"
           aria-label="Photos of the café — use the arrow keys or drag to browse"

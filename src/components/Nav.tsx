@@ -2,7 +2,8 @@ import { Menu as MenuIcon, X } from 'lucide-react'
 import { AnimatePresence, motion } from 'motion/react'
 import { useEffect, useState } from 'react'
 import { NAV_LINKS } from '../content'
-import { scrollToId } from '../lib/scroll'
+import { scrollToId, scrollToTop } from '../lib/scroll'
+import { lenis } from '../lib/smoothScroll'
 import { FernMark } from './FernMark'
 
 export function Nav() {
@@ -52,12 +53,14 @@ export function Nav() {
     if (!open) return
     const prev = document.body.style.overflow
     document.body.style.overflow = 'hidden'
+    lenis?.stop()
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') setOpen(false)
     }
     window.addEventListener('keydown', onKey)
     return () => {
       document.body.style.overflow = prev
+      lenis?.start()
       window.removeEventListener('keydown', onKey)
     }
   }, [open])
@@ -70,8 +73,7 @@ export function Nav() {
 
   const toTop = () => {
     setOpen(false)
-    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-    window.scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' })
+    scrollToTop()
   }
 
   return (

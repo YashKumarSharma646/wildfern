@@ -1400,7 +1400,7 @@ figcaption {
   position: absolute;
   inset: -20% -10%;
   pointer-events: none;
-  mix-blend-mode: screen;
+  will-change: transform, opacity;
   background:
     linear-gradient(112deg, transparent 38%, rgba(255, 220, 160, 0.16) 41%, transparent 46%),
     linear-gradient(108deg, transparent 52%, rgba(255, 220, 160, 0.12) 55%, transparent 60%),

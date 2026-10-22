@@ -17,6 +17,8 @@ export const sceneState = {
   /** Journey scroll progress 0..1 (target; the scene eases towards it) */
   journey: 0,
   reducedMotion: false,
+  /** Lenis is smoothing the scroll input, so the scene needs less easing of its own. */
+  smoothScroll: false,
   /** Clicks/taps on the 3D scene (NDC), consumed by the scene's click effects. */
   clicks: [] as { x: number; y: number }[],
 }
