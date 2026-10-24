@@ -17,6 +17,7 @@ type BarcodeDetectorCtor = {
 
 const SCAN_EVERY_MS = 220
 const RESUME_AFTER_MS = 3500
+const SAME_PASS_IGNORE_MS = 20_000
 
 async function makeNativeDetector(): Promise<BarcodeDetectorLike | null> {
   const Ctor = (window as unknown as { BarcodeDetector?: BarcodeDetectorCtor }).BarcodeDetector
@@ -176,8 +177,9 @@ export function CheckinTab() {
           text = null
         }
         const now = Date.now()
-        // Ignore the same code re-read within a few seconds.
-        if (text && !(text === lastScan.current.text && now - lastScan.current.at < 4000)) {
+        // A guest often keeps holding their phone up after being checked in. Ignore the same
+        // pass for a while so the result doesn't flip to "already checked in" under them.
+        if (text && !(text === lastScan.current.text && now - lastScan.current.at < SAME_PASS_IGNORE_MS)) {
           lastScan.current = { text, at: now }
           void verify(text)
         }

@@ -276,6 +276,7 @@ function NewBookingDialog({
   onCreated: (b: Booking) => void
 }) {
   const dialog = useRef<HTMLDialogElement>(null)
+  const nameInput = useRef<HTMLInputElement>(null)
   const walkIn = mode === 'walk-in'
   const [form, setForm] = useState({
     name: '',
@@ -292,6 +293,9 @@ function NewBookingDialog({
 
   useEffect(() => {
     dialog.current?.showModal()
+    // showModal() focuses the first focusable element (the close button), so typing a
+    // guest's name straight away would hit it — a space would even close the dialog.
+    nameInput.current?.focus()
   }, [])
 
   useEffect(() => {
@@ -352,7 +356,7 @@ function NewBookingDialog({
         <div className="a-form">
           <label className="a-field a-field--full">
             <span>Guest name</span>
-            <input value={form.name} onChange={(e) => set('name', e.target.value)} autoFocus aria-invalid={errors.name ? true : undefined} />
+            <input ref={nameInput} value={form.name} onChange={(e) => set('name', e.target.value)} aria-invalid={errors.name ? true : undefined} />
             {errors.name && <em>{errors.name}</em>}
           </label>
           <label className="a-field">
