@@ -1,4 +1,4 @@
-import { ArrowRight, CalendarDays } from 'lucide-react'
+import { ArrowRight, CalendarDays, Coffee, KeyRound } from 'lucide-react'
 import { motion } from 'motion/react'
 import { Component, lazy, Suspense, useCallback, useEffect, useRef, useState, type MouseEvent, type ReactNode } from 'react'
 import { GreeterBird, type Visit } from '../components/GreeterBird'
@@ -225,6 +225,15 @@ export function Journey({ quality, webgl, ready, onSceneReady }: Props) {
               The <em>Glasshouse</em>
             </h2>
             <p>A café of timber, stone and glass, tucked into a clearing at the heart of the forest.</p>
+            <div className="discovery__choice" role="group" aria-label="How are you visiting today?">
+              <span className="discovery__ask">How are you visiting today?</span>
+              <button type="button" className="btn btn--solid" onClick={() => scrollToId('story')}>
+                <Coffee aria-hidden /> Continue as a guest
+              </button>
+              <a className="btn" href="/admin">
+                <KeyRound aria-hidden /> I’m the owner
+              </a>
+            </div>
           </div>
         </div>
 

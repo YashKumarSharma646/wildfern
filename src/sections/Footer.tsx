@@ -103,7 +103,12 @@ export function Footer() {
         </div>
         <div className="footer__legal">
           <span>© {new Date().getFullYear()} Wildfern — a fictional café concept.</span>
-          <span>Photography from Unsplash · 3D forest rendered live in your browser.</span>
+          <span>
+            Photography from Unsplash · 3D forest rendered live in your browser ·{' '}
+            <a className="footer__owner" href="/admin">
+              Owner login
+            </a>
+          </span>
         </div>
       </div>
     </footer>

@@ -687,6 +687,32 @@ a {
   color: var(--ivory);
   text-shadow: 0 1px 16px rgba(5, 10, 7, 0.8);
 }
+/* Guest or owner? — the fork at the end of the forest journey. */
+.discovery__choice {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.7rem;
+  margin-top: 1.5rem;
+  pointer-events: auto; /* the discovery overlay itself ignores the pointer */
+}
+.discovery__ask {
+  flex-basis: 100%;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--gold-soft);
+  text-shadow: 0 1px 12px rgba(5, 10, 7, 0.8);
+}
+.discovery__choice a.btn:not(.btn--solid) {
+  background: rgba(8, 15, 10, 0.35);
+}
+@media (max-width: 640px) {
+  .discovery__choice .btn {
+    flex: 1 1 100%;
+  }
+}
 
 .journey__progress {
   position: absolute;
@@ -2479,4 +2505,11 @@ figcaption {
 .pass-page__error p {
   margin: 0;
   color: var(--ink-soft);
+}
+.footer__owner {
+  color: var(--on-dark-muted);
+  text-underline-offset: 3px;
+}
+.footer__owner:hover {
+  color: var(--ivory);
 }
